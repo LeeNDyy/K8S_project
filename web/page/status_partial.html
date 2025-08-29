@@ -1,0 +1,97 @@
+{{ $statusMap := .StatusMap }}
+
+<!-- Проблемные сервисы сначала -->
+{{ range $name, $status := $statusMap }}
+    {{ if or (not $status.HTTPUp) $status.IsBlocked (not $status.DNSValid) }}
+    <div class="column is-one-third">
+        <div class="card {{ if not $status.HTTPUp }}status-down blinking{{ else if $status.IsBlocked }}status-blocked blinking{{ else }}status-warning{{ endif }}">
+            <div class="card-content">
+                <div class="media">
+                    <div class="media-left">
+                        <span class="icon is-large">
+                            {{ if not $status.HTTPUp }}🚨
+                            {{ else if $status.IsBlocked }}⛔
+                            {{ else if not $status.DNSValid }}⚠️
+                            {{ else }}✅{{ end }}
+                        </span>
+                    </div>
+                    <div class="media-content">
+                        <p class="title is-5">{{ $name }}</p>
+                        <p class="subtitle is-6 has-text-grey">{{ $status.URL }}</p>
+                    </div>
+                </div>
+                
+                <div class="content">
+                    <div class="field is-grouped is-grouped-multiline">
+                        <div class="control">
+                            <div class="tags has-addons">
+                                <span class="tag">HTTP</span>
+                                <span class="tag {{ if $status.HTTPUp }}is-success{{ else }}is-danger{{ endif }}">
+                                    {{ if $status.HTTPUp }}OK ({{ $status.HTTPCode }}){{ else }}ERROR{{ end }}
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="control">
+                            <div class="tags has-addons">
+                                <span class="tag">DNS</span>
+                                <span class="tag {{ if $status.DNSValid }}is-success{{ else }}is-warning{{ endif }}">
+                                    {{ if $status.DNSValid }}OK{{ else }}ERROR{{ end }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <p><strong>Время ответа:</strong> {{ $status.ResponseTime }}ms</p>
+                    
+                    {{ if $status.IsBlocked }}
+                    <p class="has-text-weight-bold has-text-danger">⚠️ Возможная блокировка РКН</p>
+                    {{ end }}
+                    
+                    <p class="is-size-7 has-text-grey">
+                        Проверено: {{ $status.LastChecked.Format "15:04:05" }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{ end }}
+{{ end }}
+
+<!-- Работающие сервисы -->
+{{ range $name, $status := $statusMap }}
+    {{ if and $status.HTTPUp $status.DNSValid (not $status.IsBlocked) }}
+    <div class="column is-one-third">
+        <div class="card status-up">
+            <div class="card-content">
+                <div class="media">
+                    <div class="media-left">
+                        <span class="icon is-large">✅</span>
+                    </div>
+                    <div class="media-content">
+                        <p class="title is-5">{{ $name }}</p>
+                        <p class="subtitle is-6 has-text-grey">{{ $status.URL }}</p>
+                    </div>
+                </div>
+                
+                <div class="content">
+                    <div class="field is-grouped is-grouped-multiline">
+                        <div class="control">
+                            <div class="tags has-addons">
+                                <span class="tag">Статус</span>
+                                <span class="tag is-success">Работает</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <p><strong>Время ответа:</strong> {{ $status.ResponseTime }}ms</p>
+                    
+                    <p class="is-size-7 has-text-grey">
+                        Проверено: {{ $status.LastChecked.Format "15:04:05" }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{ end }}
+{{ end }}

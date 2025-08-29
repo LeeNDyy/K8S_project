@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>🚨 Мониторинг сервисов России</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="https://unpkg.com/htmx.org@1.9.6"></script>
+</head>
+<body>
+    <section class="section">
+        <div class="container">
+            <div class="header-box">
+                <h1 class="title has-text-centered">🚨 Мониторинг сервисов России</h1>
+                <p class="subtitle has-text-centered">Отслеживание блокировок РКН, DDoS атак и сбоев</p>
+            </div>
+
+            <div class="stats-level level">
+                <div class="level-item has-text-centered">
+                    <div>
+                        <p class="heading">Всего сервисов</p>
+                        <p class="title">{{ .Stats.TotalServices }}</p>
+                    </div>
+                </div>
+                <div class="level-item has-text-centered">
+                    <div>
+                        <p class="heading">Сбои</p>
+                        <p class="title has-text-danger" id="down-count">{{ .Stats.DownServices }}</p>
+                    </div>
+                </div>
+                <div class="level-item has-text-centered">
+                    <div>
+                        <p class="heading">Блокировки</p>
+                        <p class="title has-text-warning" id="blocked-count">{{ .Stats.BlockedServices }}</p>
+                    </div>
+                </div>
+                <div class="level-item has-text-centered">
+                    <div>
+                        <p class="heading">Последняя проверка</p>
+                        <p class="title is-6">{{ .LastChecked }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="controls buttons is-centered">
+                <button class="button is-primary is-medium" 
+                        hx-get="/status" 
+                        hx-trigger="click"
+                        hx-target="#status-container"
+                        hx-indicator="#spinner">
+                    🔄 Проверить сейчас
+                </button>
+                <button class="button is-info is-medium"
+                        hx-get="/status"
+                        hx-trigger="every 30s"
+                        hx-target="#status-container"
+                        hx-indicator="#spinner">
+                    ⏰ Автообновление
+                </button>
+            </div>
+
+            <div id="spinner" class="htmx-indicator has-text-centered">
+                <progress class="progress is-small is-primary" max="100">Загрузка...</progress>
+            </div>
+
+            <div id="status-container" class="columns is-multiline mt-4">
+                {{ template "status_partial" . }}
+            </div>
+
+            <footer class="footer">
+                <div class="content has-text-centered">
+                    <p>Последнее обновление: {{ .LastChecked }}</p>
+                    <p class="is-size-7">Мониторинг работает в режиме реального времени</p>
+                </div>
+            </footer>
+        </div>
+    </section>
+
+    <script>
+        function updateStats() {
+            const down = document.querySelectorAll('.status-down, .status-blocked').length;
+            const blocked = document.querySelectorAll('.status-blocked').length;
+            document.getElementById('down-count').textContent = down;
+            document.getElementById('blocked-count').textContent = blocked;
+        }
+
+        document.addEventListener('DOMContentLoaded', updateStats);
+        document.body.addEventListener('htmx:afterSwap', updateStats);
+        
+        setInterval(updateStats, 5000);
+    </script>
+</body>
+</html>
