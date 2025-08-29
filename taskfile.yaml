@@ -1,0 +1,25 @@
+version: "3"
+
+dotenv:
+  - .env
+
+tasks:
+  up:
+    cmd: docker compose up -d --build
+
+  down:
+    cmd: docker compose down
+
+  restart:
+    cmds:
+      - task: down
+      - task: up
+  
+  manifestos:
+    cmds: 
+        - kubectl apply -f ./kubernetes/nginx-config.yaml
+        - kubectl apply -f ./kubernetes/balancer.yaml
+        - kubectl apply -f ./kubernetes/myapp-1.yaml
+        - kubectl apply -f ./kubernetes/myapp-2.yaml
+        - kubectl apply -f ./kubernetes/myapp-3.yaml
+        - kubectl apply -f ./kubernetes/ingress.yaml
