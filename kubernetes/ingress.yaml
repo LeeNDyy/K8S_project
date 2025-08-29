@@ -1,0 +1,30 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: myapp-ingress
+  namespace: k8s_project
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: myapp-1-service
+            port:
+              number: 7080
+      - path: /api/user
+        pathType: Prefix
+        backend:
+          service:
+            name: myapp-2-service
+            port:
+              number: 7080
+      - path: /api/profile
+        pathType: Prefix
+        backend:
+          service:
+            name: myapp-3-service
+            port:
+              number: 7080

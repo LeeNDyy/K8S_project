@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp-2
+  namespace: k8s_project
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: myapp-2
+  template:
+    metadata:
+      labels:
+        app: myapp-2
+    spec:
+      containers:
+      - name: myapp-2
+        image: myapp-2:latest
+        ports:
+        - containerPort: 7080
+        env:
+        - name: TZ
+          value: Europe/Moscow
+        volumeMounts:
+        - name: web-page
+          mountPath: /app/web/page
+        - name: web-static
+          mountPath: /app/web/static
+      volumes:
+      - name: web-page
+        hostPath:
+          path: ./web/page
+      - name: web-static
+        hostPath:
+          path: ./web/static
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: myapp-2-service
+  namespace: k8s_project
+spec:
+  selector:
+    app: myapp-2
+  ports:
+  - protocol: TCP
+    port: 7080
+    targetPort: 7080
+  type: ClusterIP
