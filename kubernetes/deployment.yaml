@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp
+  namespace: default  # Лучше использовать default или создать namespace
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: myapp
+  template:
+    metadata:
+      labels:
+        app: myapp
+    spec:
+      containers:
+      - name: myapp
+        image: lendy1/k8s_project-myapp  # Добавьте тег
+        ports:
+        - containerPort: 7080
+        env:
+        - name: TZ
+          value: Europe/Moscow
+        - name: HOST  # ОБЯЗАТЕЛЬНО для Docker
+          value: "0.0.0.0"
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "100m"
+          limits:
+            memory: "128Mi"
+            cpu: "200m"
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 7080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 7080
+          initialDelaySeconds: 5
+          periodSeconds: 5
