@@ -4,7 +4,7 @@
 {{ range $name, $status := $statusMap }}
     {{ if or (not $status.HTTPUp) $status.IsBlocked (not $status.DNSValid) }}
     <div class="column is-one-third">
-        <div class="card {{ if not $status.HTTPUp }}status-down blinking{{ else if $status.IsBlocked }}status-blocked blinking{{ else }}status-warning{{ endif }}">
+        <div class="card {{ if not $status.HTTPUp }}status-down blinking{{ else if $status.IsBlocked }}status-blocked blinking{{ else }}status-warning{{ end }}">
             <div class="card-content">
                 <div class="media">
                     <div class="media-left">
@@ -26,7 +26,7 @@
                         <div class="control">
                             <div class="tags has-addons">
                                 <span class="tag">HTTP</span>
-                                <span class="tag {{ if $status.HTTPUp }}is-success{{ else }}is-danger{{ endif }}">
+                                <span class="tag {{ if $status.HTTPUp }}is-success{{ else }}is-danger{{ end }}">
                                     {{ if $status.HTTPUp }}OK ({{ $status.HTTPCode }}){{ else }}ERROR{{ end }}
                                 </span>
                             </div>
@@ -35,7 +35,7 @@
                         <div class="control">
                             <div class="tags has-addons">
                                 <span class="tag">DNS</span>
-                                <span class="tag {{ if $status.DNSValid }}is-success{{ else }}is-warning{{ endif }}">
+                                <span class="tag {{ if $status.DNSValid }}is-success{{ else }}is-warning{{ end }}">
                                     {{ if $status.DNSValid }}OK{{ else }}ERROR{{ end }}
                                 </span>
                             </div>
