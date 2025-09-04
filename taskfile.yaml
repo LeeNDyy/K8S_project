@@ -5,21 +5,10 @@ dotenv:
 
 tasks:
   up:
-    cmd: docker compose up -d --build
-
-  down:
-    cmd: docker compose down
-
-  restart:
-    cmds:
-      - task: down
-      - task: up
+    cmd: docker build -t lendy1/k8s_project-myapp .
   
   manifestos:
-    cmds: 
-        - kubectl apply -f ./kubernetes/nginx-config.yaml
-        - kubectl apply -f ./kubernetes/balancer.yaml
-        - kubectl apply -f ./kubernetes/myapp-1.yaml
-        - kubectl apply -f ./kubernetes/myapp-2.yaml
-        - kubectl apply -f ./kubernetes/myapp-3.yaml
-        - kubectl apply -f ./kubernetes/ingress.yaml
+    cmds:
+      - kubectl apply -f ./kubernetes/deployment.yaml
+      - kubectl apply -f ./kubernetes/service.yaml  
+      - kubectl apply -f ./kubernetes/ingress.yaml
